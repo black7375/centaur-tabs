@@ -176,7 +176,7 @@ long.
 When not specified, ELLIPSIS defaults to ‘...’."
   (declare (pure t) (side-effect-free t))
   (unless ellipsis
-    (setq ellipsis "..."))
+    (setq ellipsis (if (char-displayable-p ?…) "…" "...")))
   (if (> (length s) len)
       (format "%s%s" (substring s 0 (- len (length ellipsis))) ellipsis)
     (concat s (make-string (- len (length s)) ? ))))
@@ -1248,6 +1248,7 @@ Other buffer group by `centaur-tabs-get-group-name' with project name."
      (string-prefix-p "*Helm" name)
      (string-prefix-p "*Compile-Log*" name)
      (string-prefix-p "*lsp" name)
+     (string-prefix-p "*LSP" name)
      (string-prefix-p "*company" name)
      (string-prefix-p "*Flycheck" name)
      (string-prefix-p "*tramp" name)
@@ -1291,6 +1292,19 @@ Operates over buffer BUF"
 		  )))
 	  (buffer-list))
     extension-names))
+
+(defcustom centaur-tabs-enable-ido-completion t
+  "Non-nil means use `ido-completing-read' for completing reads else `completing-read'."
+  :group 'centaur-tabs
+  :type 'boolean)
+
+(defun centaur-tabs-completing-read (prompt choices)
+  "Prompt user with PROMPT to select from CHOICES using a completing read.
+Refer to  the variable `centaur-tabs-enable-ido-completion'."
+  (interactive)
+  (if centaur-tabs-enable-ido-completion
+      (ido-completing-read prompt choices)
+    (completing-read prompt choices)))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
